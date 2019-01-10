@@ -1,22 +1,83 @@
-package si.tpo.fitin.entities;
+package si.tpo.fitin.entities;/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import java.io.Serializable;
+import java.util.List;
+import java.util.Date;
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import java.sql.Time;
-import java.util.Objects;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
+/**
+ *
+ * @author Barbara
+ */
 @Entity
-public class Routine {
-    private Integer id;
-    private String name;
-    private Time duration;
-    private String description;
-    private String author;
+@Table(name = "routine")
+@XmlRootElement
+@NamedQueries({
+    @NamedQuery(name = "Routine.findAll", query = "SELECT r FROM Routine r"),
+    @NamedQuery(name = "Routine.findById", query = "SELECT r FROM Routine r WHERE r.id = :id"),
+    @NamedQuery(name = "Routine.findByName", query = "SELECT r FROM Routine r WHERE r.name = :name"),
+    @NamedQuery(name = "Routine.findByDuration", query = "SELECT r FROM Routine r WHERE r.duration = :duration"),
+    @NamedQuery(name = "Routine.findByDescription", query = "SELECT r FROM Routine r WHERE r.description = :description"),
+    @NamedQuery(name = "Routine.findByAuthor", query = "SELECT r FROM Routine r WHERE r.author = :author")})
+public class Routine implements Serializable {
 
+    private static final long serialVersionUID = 1L;
     @Id
-    @Column(name = "id", nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Basic(optional = false)
+    @Column(name = "id")
+    private Integer id;
+    @Basic(optional = false)
+    @Column(name = "name")
+    private String name;
+    @Basic(optional = false)
+    @Column(name = "duration")
+    @Temporal(TemporalType.TIME)
+    private Date duration;
+    @Column(name = "description")
+    private String description;
+    @Column(name = "author")
+    private String author;
+    @JsonIgnore
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "routineId")
+    private List<WorkoutHasRoutine> workoutHasRoutineList;
+    @JsonIgnore
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "routineId")
+    private List<RoutineHasUser> routineHasUserList;
+
+    public Routine() {
+    }
+
+    public Routine(Integer id) {
+        this.id = id;
+    }
+
+    public Routine(Integer id, String name, Date duration) {
+        this.id = id;
+        this.name = name;
+        this.duration = duration;
+    }
+
     public Integer getId() {
         return id;
     }
@@ -25,8 +86,6 @@ public class Routine {
         this.id = id;
     }
 
-    @Basic
-    @Column(name = "name", nullable = false, length = 45)
     public String getName() {
         return name;
     }
@@ -35,18 +94,14 @@ public class Routine {
         this.name = name;
     }
 
-    @Basic
-    @Column(name = "duration", nullable = false)
-    public Time getDuration() {
+    public Date getDuration() {
         return duration;
     }
 
-    public void setDuration(Time duration) {
+    public void setDuration(Date duration) {
         this.duration = duration;
     }
 
-    @Basic
-    @Column(name = "description", nullable = true, length = 45)
     public String getDescription() {
         return description;
     }
@@ -55,8 +110,6 @@ public class Routine {
         this.description = description;
     }
 
-    @Basic
-    @Column(name = "author", nullable = true, length = 45)
     public String getAuthor() {
         return author;
     }
@@ -65,20 +118,47 @@ public class Routine {
         this.author = author;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Routine routine = (Routine) o;
-        return Objects.equals(id, routine.id) &&
-                Objects.equals(name, routine.name) &&
-                Objects.equals(duration, routine.duration) &&
-                Objects.equals(description, routine.description) &&
-                Objects.equals(author, routine.author);
+    @XmlTransient
+    public List<WorkoutHasRoutine> getWorkoutHasRoutineList() {
+        return workoutHasRoutineList;
+    }
+
+    public void setWorkoutHasRoutineList(List<WorkoutHasRoutine> workoutHasRoutineList) {
+        this.workoutHasRoutineList = workoutHasRoutineList;
+    }
+
+    @XmlTransient
+    public List<RoutineHasUser> getRoutineHasUserList() {
+        return routineHasUserList;
+    }
+
+    public void setRoutineHasUserList(List<RoutineHasUser> routineHasUserList) {
+        this.routineHasUserList = routineHasUserList;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, duration, description, author);
+        int hash = 0;
+        hash += (id != null ? id.hashCode() : 0);
+        return hash;
     }
+
+    @Override
+    public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
+        if (!(object instanceof Routine)) {
+            return false;
+        }
+        Routine other = (Routine) object;
+        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "javaapplication1.Routine[ id=" + id + " ]";
+    }
+    
 }

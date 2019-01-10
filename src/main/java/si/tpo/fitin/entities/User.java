@@ -1,31 +1,98 @@
-package si.tpo.fitin.entities;
+package si.tpo.fitin.entities;/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 
-import javax.persistence.*;
-import java.math.BigDecimal;
-import java.util.Objects;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import java.io.Serializable;
+import java.util.List;
+import javax.persistence.Basic;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
+
+/**
+ *
+ * @author Barbara
+ */
 @Entity
-public class User {
-    private Integer id;
-    private String username;
-    private String email;
-    private String name;
-    private Boolean vip;
-    private String bankAccount;
-    private BigDecimal startingWeight;
-    private BigDecimal goalWeight;
-    private BigDecimal currentWeight;
-    private String equipment1;
-    private String equipment2;
-    private String equipment3;
-    private String equipment4;
-    private String equipment5;
-    private String equipment6;
-    private String password;
+@Table(name = "user")
+@XmlRootElement
+@NamedQueries({
+    @NamedQuery(name = "User.findAll", query = "SELECT u FROM User u"),
+    @NamedQuery(name = "User.findById", query = "SELECT u FROM User u WHERE u.id = :id"),
+    @NamedQuery(name = "User.findByUsername", query = "SELECT u FROM User u WHERE u.username = :username"),
+    @NamedQuery(name = "User.findByEmail", query = "SELECT u FROM User u WHERE u.email = :email"),
+    @NamedQuery(name = "User.findByName", query = "SELECT u FROM User u WHERE u.name = :name"),
+    @NamedQuery(name = "User.findByVip", query = "SELECT u FROM User u WHERE u.vip = :vip"),
+    @NamedQuery(name = "User.findByBankAccount", query = "SELECT u FROM User u WHERE u.bankAccount = :bankAccount"),
+    @NamedQuery(name = "User.findByStartingWeight", query = "SELECT u FROM User u WHERE u.startingWeight = :startingWeight"),
+    @NamedQuery(name = "User.findByGoalWeight", query = "SELECT u FROM User u WHERE u.goalWeight = :goalWeight"),
+    @NamedQuery(name = "User.findByCurrentWeight", query = "SELECT u FROM User u WHERE u.currentWeight = :currentWeight"),
+    @NamedQuery(name = "User.findByPassword", query = "SELECT u FROM User u WHERE u.password = :password")})
+public class User implements Serializable {
 
+    private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
+    @Basic(optional = false)
+    @Column(name = "id")
+    private Integer id;
+    @Basic(optional = false)
+    @Column(name = "username")
+    private String username;
+    @Basic(optional = false)
+    @Column(name = "email")
+    private String email;
+    @Basic(optional = false)
+    @Column(name = "name")
+    private String name;
+    @Basic(optional = false)
+    @Column(name = "vip")
+    private boolean vip;
+    @Column(name = "bank_account")
+    private String bankAccount;
+    // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
+    @Column(name = "starting_weight")
+    private Float startingWeight;
+    @Column(name = "goal_weight")
+    private Float goalWeight;
+    @Column(name = "current_weight")
+    private Float currentWeight;
+    @Basic(optional = false)
+    @Column(name = "password")
+    private String password;
+    @JsonIgnore
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "userId")
+    private List<RoutineHasUser> routineHasUserList;
+
+    public User() {
+    }
+
+    public User(Integer id) {
+        this.id = id;
+    }
+
+    public User(Integer id, String username, String email, String name, boolean vip, String password) {
+        this.id = id;
+        this.username = username;
+        this.email = email;
+        this.name = name;
+        this.vip = vip;
+        this.password = password;
+    }
+
     public Integer getId() {
         return id;
     }
@@ -34,8 +101,6 @@ public class User {
         this.id = id;
     }
 
-    @Basic
-    @Column(name = "username", nullable = false, length = 45)
     public String getUsername() {
         return username;
     }
@@ -44,8 +109,6 @@ public class User {
         this.username = username;
     }
 
-    @Basic
-    @Column(name = "email", nullable = false, length = 45)
     public String getEmail() {
         return email;
     }
@@ -54,8 +117,6 @@ public class User {
         this.email = email;
     }
 
-    @Basic
-    @Column(name = "name", nullable = false, length = 45)
     public String getName() {
         return name;
     }
@@ -64,18 +125,14 @@ public class User {
         this.name = name;
     }
 
-    @Basic
-    @Column(name = "vip", nullable = false, columnDefinition = "bit default 0")
-    public Boolean getVip() {
+    public boolean getVip() {
         return vip;
     }
 
-    public void setVip(Boolean vip) {
+    public void setVip(boolean vip) {
         this.vip = vip;
     }
 
-    @Basic
-    @Column(name = "bank_account", nullable = true, length = 45)
     public String getBankAccount() {
         return bankAccount;
     }
@@ -84,98 +141,30 @@ public class User {
         this.bankAccount = bankAccount;
     }
 
-    @Basic
-    @Column(name = "starting_weight", nullable = true, precision = 2)
-    public BigDecimal getStartingWeight() {
+    public Float getStartingWeight() {
         return startingWeight;
     }
 
-    public void setStartingWeight(BigDecimal startingWeight) {
+    public void setStartingWeight(Float startingWeight) {
         this.startingWeight = startingWeight;
     }
 
-    @Basic
-    @Column(name = "goal_weight", nullable = true, precision = 2)
-    public BigDecimal getGoalWeight() {
+    public Float getGoalWeight() {
         return goalWeight;
     }
 
-    public void setGoalWeight(BigDecimal goalWeight) {
+    public void setGoalWeight(Float goalWeight) {
         this.goalWeight = goalWeight;
     }
 
-    @Basic
-    @Column(name = "current_weight", nullable = true, precision = 2)
-    public BigDecimal getCurrentWeight() {
+    public Float getCurrentWeight() {
         return currentWeight;
     }
 
-    public void setCurrentWeight(BigDecimal currentWeight) {
+    public void setCurrentWeight(Float currentWeight) {
         this.currentWeight = currentWeight;
     }
 
-    @Basic
-    @Column(name = "equipment1", nullable = true, length = 45)
-    public String getEquipment1() {
-        return equipment1;
-    }
-
-    public void setEquipment1(String equipment1) {
-        this.equipment1 = equipment1;
-    }
-
-    @Basic
-    @Column(name = "equipment2", nullable = true, length = 45)
-    public String getEquipment2() {
-        return equipment2;
-    }
-
-    public void setEquipment2(String equipment2) {
-        this.equipment2 = equipment2;
-    }
-
-    @Basic
-    @Column(name = "equipment3", nullable = true, length = 45)
-    public String getEquipment3() {
-        return equipment3;
-    }
-
-    public void setEquipment3(String equipment3) {
-        this.equipment3 = equipment3;
-    }
-
-    @Basic
-    @Column(name = "equipment4", nullable = true, length = 45)
-    public String getEquipment4() {
-        return equipment4;
-    }
-
-    public void setEquipment4(String equipment4) {
-        this.equipment4 = equipment4;
-    }
-
-    @Basic
-    @Column(name = "equipment5", nullable = true, length = 45)
-    public String getEquipment5() {
-        return equipment5;
-    }
-
-    public void setEquipment5(String equipment5) {
-        this.equipment5 = equipment5;
-    }
-
-    @Basic
-    @Column(name = "equipment6", nullable = true, length = 45)
-    public String getEquipment6() {
-        return equipment6;
-    }
-
-    public void setEquipment6(String equipment6) {
-        this.equipment6 = equipment6;
-    }
-
-    @Basic
-    @Column(name = "password", nullable = false, length = 64)
     public String getPassword() {
         return password;
     }
@@ -184,31 +173,38 @@ public class User {
         this.password = password;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        User user = (User) o;
-        return Objects.equals(id, user.id) &&
-                Objects.equals(username, user.username) &&
-                Objects.equals(email, user.email) &&
-                Objects.equals(name, user.name) &&
-                Objects.equals(vip, user.vip) &&
-                Objects.equals(bankAccount, user.bankAccount) &&
-                Objects.equals(startingWeight, user.startingWeight) &&
-                Objects.equals(goalWeight, user.goalWeight) &&
-                Objects.equals(currentWeight, user.currentWeight) &&
-                Objects.equals(equipment1, user.equipment1) &&
-                Objects.equals(equipment2, user.equipment2) &&
-                Objects.equals(equipment3, user.equipment3) &&
-                Objects.equals(equipment4, user.equipment4) &&
-                Objects.equals(equipment5, user.equipment5) &&
-                Objects.equals(equipment6, user.equipment6) &&
-                Objects.equals(password, user.password);
+    @XmlTransient
+    public List<RoutineHasUser> getRoutineHasUserList() {
+        return routineHasUserList;
+    }
+
+    public void setRoutineHasUserList(List<RoutineHasUser> routineHasUserList) {
+        this.routineHasUserList = routineHasUserList;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, username, email, name, vip, bankAccount, startingWeight, goalWeight, currentWeight, equipment1, equipment2, equipment3, equipment4, equipment5, equipment6, password);
+        int hash = 0;
+        hash += (id != null ? id.hashCode() : 0);
+        return hash;
     }
+
+    @Override
+    public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
+        if (!(object instanceof User)) {
+            return false;
+        }
+        User other = (User) object;
+        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "javaapplication1.User[ id=" + id + " ]";
+    }
+    
 }

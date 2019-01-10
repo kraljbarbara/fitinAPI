@@ -1,17 +1,59 @@
-package si.tpo.fitin.entities;
+package si.tpo.fitin.entities;/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 
-import javax.persistence.*;
-import java.util.Objects;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import java.io.Serializable;
+import javax.persistence.Basic;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.Table;
+import javax.xml.bind.annotation.XmlRootElement;
+
+/**
+ *
+ * @author Barbara
+ */
 @Entity
-@Table(name = "routine_has_user", schema = "mydb", catalog = "")
-public class RoutineHasUser {
-    private Integer id;
-    private Integer routineId;
-    private Integer userId;
+@Table(name = "routine_has_user")
+@XmlRootElement
+@NamedQueries({
+    @NamedQuery(name = "RoutineHasUser.findAll", query = "SELECT r FROM RoutineHasUser r"),
+    @NamedQuery(name = "RoutineHasUser.findById", query = "SELECT r FROM RoutineHasUser r WHERE r.id = :id")})
+public class RoutineHasUser implements Serializable {
 
+    private static final long serialVersionUID = 1L;
     @Id
-    @Column(name = "id", nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Basic(optional = false)
+    @Column(name = "id")
+    private Integer id;
+    @JoinColumn(name = "routine_id", referencedColumnName = "id")
+    @JsonIgnore
+    @ManyToOne(optional = false)
+    private Routine routineId;
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    @JsonIgnore
+    @ManyToOne(optional = false)
+    private User userId;
+
+    public RoutineHasUser() {
+    }
+
+    public RoutineHasUser(Integer id) {
+        this.id = id;
+    }
+
     public Integer getId() {
         return id;
     }
@@ -20,36 +62,45 @@ public class RoutineHasUser {
         this.id = id;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        RoutineHasUser that = (RoutineHasUser) o;
-        return Objects.equals(id, that.id);
+    public Routine getRoutineId() {
+        return routineId;
+    }
+
+    public void setRoutineId(Routine routineId) {
+        this.routineId = routineId;
+    }
+
+    public User getUserId() {
+        return userId;
+    }
+
+    public void setUserId(User userId) {
+        this.userId = userId;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        int hash = 0;
+        hash += (id != null ? id.hashCode() : 0);
+        return hash;
     }
 
-    @Basic
-    @Column(name = "routine_id", nullable = false)
-    public Integer getRoutineId() {
-        return routineId;
+    @Override
+    public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
+        if (!(object instanceof RoutineHasUser)) {
+            return false;
+        }
+        RoutineHasUser other = (RoutineHasUser) object;
+        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+            return false;
+        }
+        return true;
     }
 
-    public void setRoutineId(Integer routineId) {
-        this.routineId = routineId;
+    @Override
+    public String toString() {
+        return "javaapplication1.RoutineHasUser[ id=" + id + " ]";
     }
-
-    @Basic
-    @Column(name = "user_id", nullable = false)
-    public Integer getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Integer userId) {
-        this.userId = userId;
-    }
+    
 }

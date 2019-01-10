@@ -55,18 +55,18 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public void register(@RequestBody LoginReq req) throws Exception{
+    public int register(@RequestBody LoginReq req) throws Exception{
         String username = req.getUsername();
         if(userRepository.findByUsername(username).isPresent()) {
             User user = userRepository.findByUsername(username).get();
             if(user.getPassword().equals(hashPassword(req.getPassword()))){
-                return;
+                return user.getId();
             }else{
                 throw  new Exception("Wrong password");
             }
 
         }else{
-            throw new Exception("Username doesn+t exist");
+            throw new Exception("Username doesn't exist");
         }
     }
 

@@ -7,30 +7,32 @@ package si.tpo.fitin.entities;/*
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.io.Serializable;
+import java.util.Collection;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
  * @author Barbara
  */
 @Entity
-@Table(name = "workout_has_routine")
+@Table(name = "equipment")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "WorkoutHasRoutine.findAll", query = "SELECT w FROM WorkoutHasRoutine w"),
-    @NamedQuery(name = "WorkoutHasRoutine.findById", query = "SELECT w FROM WorkoutHasRoutine w WHERE w.id = :id")})
-public class WorkoutHasRoutine implements Serializable {
+    @NamedQuery(name = "Equipment.findAll", query = "SELECT e FROM Equipment e"),
+    @NamedQuery(name = "Equipment.findById", query = "SELECT e FROM Equipment e WHERE e.id = :id"),
+    @NamedQuery(name = "Equipment.findByName", query = "SELECT e FROM Equipment e WHERE e.name = :name")})
+public class Equipment implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -38,19 +40,23 @@ public class WorkoutHasRoutine implements Serializable {
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
-    @JoinColumn(name = "routine_id", referencedColumnName = "id")
-    @ManyToOne(optional = false)
-    private Routine routineId;
-    @JoinColumn(name = "workout_id", referencedColumnName = "id")
+    @Basic(optional = false)
+    @Column(name = "name")
+    private String name;
     @JsonIgnore
-    @ManyToOne(optional = false)
-    private Workout workoutId;
+    @OneToMany(mappedBy = "equipmentId")
+    private Collection<Workout> workoutCollection;
 
-    public WorkoutHasRoutine() {
+    public Equipment() {
     }
 
-    public WorkoutHasRoutine(Integer id) {
+    public Equipment(Integer id) {
         this.id = id;
+    }
+
+    public Equipment(Integer id, String name) {
+        this.id = id;
+        this.name = name;
     }
 
     public Integer getId() {
@@ -61,20 +67,21 @@ public class WorkoutHasRoutine implements Serializable {
         this.id = id;
     }
 
-    public Routine getRoutineId() {
-        return routineId;
+    public String getName() {
+        return name;
     }
 
-    public void setRoutineId(Routine routineId) {
-        this.routineId = routineId;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public Workout getWorkoutId() {
-        return workoutId;
+    @XmlTransient
+    public Collection<Workout> getWorkoutCollection() {
+        return workoutCollection;
     }
 
-    public void setWorkoutId(Workout workoutId) {
-        this.workoutId = workoutId;
+    public void setWorkoutCollection(Collection<Workout> workoutCollection) {
+        this.workoutCollection = workoutCollection;
     }
 
     @Override
@@ -87,10 +94,10 @@ public class WorkoutHasRoutine implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof WorkoutHasRoutine)) {
+        if (!(object instanceof Equipment)) {
             return false;
         }
-        WorkoutHasRoutine other = (WorkoutHasRoutine) object;
+        Equipment other = (Equipment) object;
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
@@ -99,7 +106,7 @@ public class WorkoutHasRoutine implements Serializable {
 
     @Override
     public String toString() {
-        return "javaapplication1.WorkoutHasRoutine[ id=" + id + " ]";
+        return "javaapplication1.Equipment[ id=" + id + " ]";
     }
     
 }

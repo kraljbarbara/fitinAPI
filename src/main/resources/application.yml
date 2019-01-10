@@ -1,6 +1,9 @@
 spring:
   datasource:
-    url: jdbc:mysql://localhost:3306/mydb
+    url: jdbc:mysql://localhost:3306/mydb?autoReconnect=true
+    validationQuery: SELECT 1
+    testOnBorrow: true
+    validationInterval: 60000
     username: root
     password:
   jpa:
