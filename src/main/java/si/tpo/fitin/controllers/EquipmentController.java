@@ -22,14 +22,15 @@ public class EquipmentController {
     }
 
     @PostMapping("/equipments/add")
-    public void addEquipment(@RequestBody EquipmetReq req) throws Exception {
+    public String addEquipment(@RequestBody EquipmetReq req) throws Exception {
         Equipment eq = new Equipment();
         String name = req.getName();
         if (!equipmentRepository.findByName(name).isPresent()) {
             eq.setName(name);
             equipmentRepository.save(eq);
         } else {
-            throw new Exception("Equipment already exists");
+            return ("Equipment already exists");
         }
+        return "";
     }
 }

@@ -35,6 +35,7 @@ public class UserController {
     }
 
     @GetMapping("/users/{id}")
+
     public User getUser(@PathVariable("id") Integer id) throws Exception {
         Optional<User> user = userRepository.findById(id);
 
@@ -62,6 +63,34 @@ public class UserController {
         }
 
         return routines;
+    }
+
+    @GetMapping("/users/{id}/routines/add/{routine_id}")
+    public String addRoutines(@PathVariable("id") Integer id, @PathVariable("routine_id") Integer routine_id) throws Exception {
+        Optional<User> optionalUser = userRepository.findById(id);
+
+        if (!optionalUser.isPresent()) {
+            return (String.format("User with id %d doesn't exist.", id));
+        }
+
+        User user = optionalUser.get();
+
+        Optional<Routine> optionalRoutine = routineRepository.findById(routine_id);
+        if(!optionalRoutine.isPresent()){
+            return "Routine with this id doesn't exist";
+        }
+
+        for (RoutineHasUser routineHasUser : user.getRoutineHasUserList()) {
+            if(routineHasUser.getRoutineId().getId() == routine_id){
+                return "Routine is already registered for this user";
+            }
+        }
+
+        RoutineHasUser obj = new RoutineHasUser();
+        obj.setUserId(user);
+        obj.setRoutineId(optionalRoutine.get());
+        routineHasRepository.save(obj);
+        return "";
     }
 
     @GetMapping("/users/{id}/routines/{routine_id}")
@@ -204,11 +233,11 @@ public class UserController {
     }
 
     @PostMapping("/users/{id}/profile/update")
-    public void profileUpdate(@RequestBody ProfileModel req, @PathVariable("id") Integer id) throws Exception {
+    public String profileUpdate(@RequestBody ProfileModel req, @PathVariable("id") Integer id) throws Exception {
         Optional<User> optionalUser = userRepository.findById(id);
 
         if (!optionalUser.isPresent()) {
-            throw new Exception(String.format("User with id %d doesn't exist.", id));
+            return String.format("User with id %d doesn't exist.", id);
         }
 
         User user = optionalUser.get();
@@ -224,5 +253,6 @@ public class UserController {
             user.setGoalWeight(req.getgoalWeight());
 
         userRepository.save(user);
+        return "";
     }
 }

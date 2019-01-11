@@ -23,7 +23,7 @@ public class AuthController {
     private UserRepository userRepository;
 
     @PostMapping("/register")
-    public void register(@RequestBody RegistrationReq req) throws Exception{
+    public String register(@RequestBody RegistrationReq req) throws Exception {
         User user = new User();
         String username = req.getUsername();
         String email = req.getEmail();
@@ -41,17 +41,18 @@ public class AuthController {
                     userRepository.save(user);
                 }
                 else{
-                    throw new Exception("Invalid email format");
+                    return ("Invalid email format");
                 }
 
             }
             else {
-                throw new Exception("Email already exists");
+                return ("Email already exists");
             }
 
         }else{
-            throw new Exception("Username already taken");
+            return ("Username already taken");
         }
+        return "";
     }
 
     @PostMapping("/login")
